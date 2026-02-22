@@ -23,4 +23,12 @@ public class BookService {
     public Book getBookByName(String name) {
         return bookRepository.findBookByTitle(name);
     }
+
+    public Book updateBook(Book book) {
+       return bookRepository.save(book);
+    }
+
+    public void deleteBook(Integer id) {
+        bookRepository.deleteById(id);
+    }
 }
