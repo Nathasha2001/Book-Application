@@ -4,44 +4,52 @@ import com.example.BookApplication.Entity.Book;
 import com.example.BookApplication.Service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping( "/book/v1")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class BookController {
 
     private final BookService bookService;
-    @Autowired
+
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
+    
     @GetMapping("/all")
     public ResponseEntity<List<Book>> getAllBooks() {
-        List<Book> books = bookService.getAllBooks(); // You need to add this in BookService
+        List<Book> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
 
     @PostMapping("/addBook")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         Book savedBook = bookService.addBook(book);
         return ResponseEntity.ok(savedBook);
     }
-@GetMapping( "/getBook/{bookname}")
+
+    @GetMapping( "/getBook/{bookname}")
     public ResponseEntity<Book> getBookByName (@PathVariable("bookname")String name){
-    final Book bookByName = bookService.getBookByName(name);
-    return ResponseEntity.ok(bookByName);
-}
-@PutMapping( "/updateBook")
+        final Book bookByName = bookService.getBookByName(name);
+        return ResponseEntity.ok(bookByName);
+    }
+
+    @PutMapping( "/updateBook")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Book> updateBook(@RequestBody Book book){
         Book updatedBook = bookService.updateBook(book);
         return ResponseEntity.ok(updatedBook);
-}
+    }
 
-@DeleteMapping( "/deleteBook/{id}")
+    @DeleteMapping( "/deleteBook/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Book> deleteBook(@PathVariable("id")Integer id){
        bookService.deleteBook(id);
        return ResponseEntity.ok().build();
-}
+    }
 }
